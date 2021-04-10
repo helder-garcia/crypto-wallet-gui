@@ -11,7 +11,7 @@
 #include <QNetworkReply>
 #include <QStringList>
 #include <QUrl>
-
+#include <chrono>
 #include "AddressProvider.h"
 
 namespace WalletGui {
@@ -27,7 +27,7 @@ void AddressProvider::getAddress(const QString& _urlString) {
   if (!url.isValid()) {
     return;
   }
-  auto now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+  qlonglong now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
   QNetworkRequest request(url);
   request.setAttribute(QNetworkRequest::User, now);
   QNetworkReply* reply = m_networkManager.get(request);

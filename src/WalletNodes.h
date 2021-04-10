@@ -19,7 +19,7 @@ class WalletNodes : public QObject
 public:
   WalletNodes(QObject * parent = nullptr);
   ~WalletNodes();
-  void GetWalletNodes();
+  void GetWalletNodes(bool _reset);
   QStringList listOfNodes;
 
 private:
@@ -29,6 +29,7 @@ signals:
 
 private slots:
   void OnListReadFinished();
+  void OnListReadFinishedResetBefore();
 
 private:
   QNetworkAccessManager * myNetManager;

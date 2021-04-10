@@ -77,6 +77,7 @@ public:
   void stop(Node** _node) {
     Q_CHECK_PTR(*_node);
     (*_node)->deinit();
+    return;
   }
 };
 
@@ -194,10 +195,11 @@ bool NodeAdapter::init() {
               initTimer.stop();
               Q_EMIT nodeInitCompletedSignal();
               return true;
+            } else {
+              delete m_node;
+              m_node = nullptr;
+              return initInProcessNode();
             }
-            delete m_node;
-            m_node = nullptr;
-            return initInProcessNode();
         }
 
 }
@@ -320,6 +322,7 @@ bool NodeAdapter::initInProcessNode() {
 
 void NodeAdapter::deinit() {
   if (m_node != nullptr) {
+
     if (m_nodeInitializerThread.isRunning()) {
       m_nodeInitializer->stop(&m_node);
       QEventLoop waitLoop;
@@ -327,9 +330,11 @@ void NodeAdapter::deinit() {
       waitLoop.exec();
       m_nodeInitializerThread.quit();
       m_nodeInitializerThread.wait();
+      return;
     } else {
       delete m_node;
       m_node = nullptr;
+      return;
     }
   }
 }

@@ -117,7 +117,7 @@ int main(int argc, char* argv[]) {
     return 0;
   }
   auto wNodes = new WalletNodes;
-  wNodes->GetWalletNodes();
+  wNodes->GetWalletNodes(false);
 
   SignalHandler::instance().init();
   QObject::connect(&SignalHandler::instance(), &SignalHandler::quitSignal, &app, &QApplication::quit);
@@ -157,7 +157,6 @@ int main(int argc, char* argv[]) {
     if (WalletAdapter::instance().isOpen()) {
       WalletAdapter::instance().close();
     }
-
     NodeAdapter::instance().deinit();
   });
 

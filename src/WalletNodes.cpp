@@ -27,14 +27,34 @@ WalletNodes::~WalletNodes()
 {
 }
 
-void WalletNodes::GetWalletNodes()
+void WalletNodes::GetWalletNodes(bool _reset=false)
 {
   if(myNetManager->networkAccessible() == QNetworkAccessManager::Accessible)
   {
-    const QUrl WALLETNODES_LIST_URL("https://raw.githubusercontent.com/niobio-cash/wallet-support-files/master/wallet-nodes.txt");
+    const QUrl WALLETNODES_LIST_URL("https://raw.githubusercontent.com/niobio-cash-classic/wallet-support-files/master/wallet-nodes.txt");
     myNetReply = myNetManager->get(QNetworkRequest(WALLETNODES_LIST_URL));
-    connect(myNetReply, &QNetworkReply::finished, this, &WalletNodes::OnListReadFinished);
+    if(_reset) {
+      connect(myNetReply, &QNetworkReply::finished, this, &WalletNodes::OnListReadFinishedResetBefore);
+    } else {
+      connect(myNetReply, &QNetworkReply::finished, this, &WalletNodes::OnListReadFinished);
+    }
+    
+
   }
+}
+
+void WalletNodes::OnListReadFinishedResetBefore()
+{
+  QString result = myNetReply->readAll().data();
+  result = result.trimmed();
+  listOfNodes = result.split("\n");
+  QStringList currentRpcNodesList;
+  Q_FOREACH (const QString& node, listOfNodes) {
+    currentRpcNodesList << node;
+  }
+  Settings::instance().setRpcNodesList(currentRpcNodesList);
+  saveSettings(currentRpcNodesList);
+	NetworkCleanup();
 }
 
 void WalletNodes::OnListReadFinished()
